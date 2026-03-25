@@ -1,0 +1,152 @@
+import type { Request, Response } from "express";
+import { User } from "../schema/userSchema.js";
+import z from "zod";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import { generateToken } from "../utils/generateToken.js";
+
+interface MyTokenPayload {
+    userId: string;
+    iat: number;
+    exp: number;
+}
+
+const userSchema = z.object({
+    username: z.string().min(5),
+    password: z.string().min(6),
+    firstName: z.string().min(3),
+    lastName: z.string().min(3)
+})
+
+export const signup = async (req: Request, res: Response) => {
+
+    try {
+
+        const result = userSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({
+                errors: result.error
+            });
+        }
+        const { username, password, firstName, lastName } = result.data
+
+        const user = await User.findOne({
+            username
+        })
+
+        if (user) {
+            return res.status(200).json({
+                message: "User already Exists",
+                success: true
+            })
+        }
+
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+
+        const createdUser = await User.create({
+            username,
+            password: hashedPassword,
+            firstName,
+            lastName
+        });
+
+        res.json({
+            message: "User Created Successfully",
+
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        })
+    }
+}
+
+
+
+export const signin = async (req: Request, res: Response) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({
+                message: "Invalid Input",
+                success: false
+            })
+        }
+
+        const user = await User.findOne({
+            username
+        })
+
+        if (!user) {
+            return res.status(400).json({
+                message: "User Not Found",
+                success: false
+            })
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({
+                message: "Invalid Password",
+                success: false
+            })
+        }
+
+        const userId = user._id;
+        const { accessToken, refreshToken } = generateToken(userId)
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict"
+        })
+
+
+        res.json({
+            message: "User Logged In Successfully",
+            accessToken
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        })
+    }
+
+
+}
+
+
+export const refreshToken = (req: Request, res: Response) => {
+    const token = req.cookies.refreshToken;
+
+    if (!token) return res.status(401).json({ message: "No refresh Token Present" });
+
+    try {
+        const decoded = jwt.verify(token, process.env.REFRESH_SECRET) as MyTokenPayload;
+
+        const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET, { expiresIn: "15m" })
+
+        res.json({ accessToken });
+    } catch (error) {
+        res.status(403).json({
+            message: `Some error Occurred ${error}`
+        })
+    }
+}
+
+
+
+export const logout = (req: Request, res: Response) => {
+    res.clearCookie("refreshToken");
+    res.json({ message: "Logged out" });
+};
