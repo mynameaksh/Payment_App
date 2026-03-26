@@ -4,6 +4,7 @@ import z from "zod";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { generateToken } from "../utils/generateToken.js";
+import type { AuthRequest } from "../middlewares/authMiddleware.js";
 
 interface MyTokenPayload {
     userId: string;
@@ -150,3 +151,35 @@ export const logout = (req: Request, res: Response) => {
     res.clearCookie("refreshToken");
     res.json({ message: "Logged out" });
 };
+
+//zod schema for updatingINfo
+const updateBody = z.object({
+    password: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional()
+})
+
+
+export const updateInfo = async (req: AuthRequest, res: Response) => {
+
+    const result = updateBody.safeParse(req.body); //the result will be an object always
+    if (!result.success) {
+        return res.json({
+            message: "Enter info competely and correctly"
+        })
+    }
+    if (Object.keys(result.data).length === 0) {
+        return res.status(400).json({ message: "No fields provided to update" });
+    }
+
+
+    const updatedDocument = await User.updateOne({ _id: req.user?.userId },// filter
+        //update
+        { $set: result.data })
+
+
+    res.json({
+        updatedDocument,
+        message: "Updated Document"
+    })
+}
