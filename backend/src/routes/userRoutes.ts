@@ -1,5 +1,5 @@
 import express from "express";
-import { logout, refreshToken, signin, signup, updateInfo } from "../controllers/userController.js";
+import { getUser, logout, refreshToken, signin, signup, updateInfo } from "../controllers/userController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
@@ -11,6 +11,7 @@ router.post("/signin", signin);
 router.post("/refresh", authMiddleware, refreshToken);
 router.post("/logout", logout);
 router.put("/updateInfo", authMiddleware, updateInfo)
+router.get("/user/search", authMiddleware, getUser)
 
 
 export default router;

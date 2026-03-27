@@ -1,6 +1,7 @@
 import express from "express";
 import ConnectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js"
+import bankRoutes from "./routes/bankRoutes.js"
 import cors from "cors"
 
 import dotenv from "dotenv";
@@ -22,7 +23,8 @@ app.use(cors({
 
 
 
-app.use("/api/v1", userRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/account", bankRoutes);
 
 
 

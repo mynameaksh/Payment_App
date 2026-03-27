@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { User } from "../schema/userSchema.js";
+import { Bank } from "../schema/bankSchema.js";
 import z from "zod";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
@@ -52,6 +53,10 @@ export const signup = async (req: Request, res: Response) => {
             firstName,
             lastName
         });
+
+        await Bank.create({
+            userId: createdUser._id
+        })
 
         res.json({
             message: "User Created Successfully",
@@ -182,4 +187,38 @@ export const updateInfo = async (req: AuthRequest, res: Response) => {
         updatedDocument,
         message: "Updated Document"
     })
+}
+
+
+
+
+export const getUser = async (req: AuthRequest, res: Response) => {
+    try {
+        //getting the value from query parameter URL
+        const search = req.query.q || ""; "THE EMPTY STRING WILL HELP YU TO GET ALL THE USERS "
+
+        const foundUser = await User.find({
+            username: { $regex: `^${search}`, $options: "i" } //^ = IT MATCXHES WITH THE INPUT OR EMPTY VALUE 
+        })
+        if (!foundUser) {
+            return res.json({
+                message: "User not found"
+            })
+        }
+
+        return res.status(200).json({
+            user: foundUser.map(u => ({
+                username: u.username,
+                firstName: u.firstName,
+                lastName: u.lastName,
+                _id: u._id
+            }))
+
+        })
+    } catch (error) {
+        res.json({
+            message: error
+        })
+    }
+
 }
