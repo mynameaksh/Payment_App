@@ -5,7 +5,7 @@ import { Heading2 } from "../components/Heading2"
 import InputBox from "../components/InputBox"
 import Links from "../components/Links"
 import api from "../api"
-
+import { useAuth } from "../context/AuthContext"
 
 interface SignupResponse {
   accessToken: string;
@@ -20,6 +20,7 @@ function Signup() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
+  const { signin } = useAuth()
 
 
   const handleSignup = async () => {
@@ -36,10 +37,10 @@ function Signup() {
       const response = await api.post<SignupResponse>('/user/signup', signupData);
       const { accessToken, userId } = response.data
 
+      signin(accessToken, userId)
 
-      localStorage.setItem("accessToken", accessToken)
-      localStorage.setItem("userId", userId)
-      console.log('success', response.data.message);
+
+
       alert('Account created')
     } catch (error: any) {
 

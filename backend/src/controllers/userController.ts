@@ -58,10 +58,22 @@ export const signup = async (req: Request, res: Response) => {
             userId: createdUser._id
         })
 
-        res.json({
-            message: "User Created Successfully",
+        const userId = createdUser._id;
+        const { accessToken, refreshToken } = generateToken(userId)
 
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict"
         })
+
+
+        res.json({
+            message: "User Created In completely",
+            accessToken,
+            userId
+        })
+
 
 
     } catch (error) {
@@ -115,8 +127,9 @@ export const signin = async (req: Request, res: Response) => {
 
 
         res.json({
-            message: "User Logged In Successfully",
-            accessToken
+            message: "User Logged In completely",
+            accessToken,
+            userId
         })
 
 

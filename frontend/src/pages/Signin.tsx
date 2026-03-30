@@ -1,10 +1,11 @@
-import { useRef } from "react"
+import { useContext, useRef } from "react"
 import Button from "../components/Button"
 import { Heading } from "../components/Heading"
 import { Heading2 } from "../components/Heading2"
 import InputBox from "../components/InputBox"
 import Links from "../components/Links"
 import api from "../api"
+import { useAuth } from "../context/AuthContext"
 
 interface SignupResponse {
     accessToken: string;
@@ -13,7 +14,7 @@ interface SignupResponse {
 }
 
 function Signin() {
-
+    const { signin } = useAuth()
     const usernameRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -27,9 +28,9 @@ function Signin() {
         try {
             const response = await api.post<SignupResponse>("/user/signin", signinData);
             const { accessToken, userId } = response.data
-            localStorage.setItem("accessToken", accessToken)
-            localStorage.setItem("userId", userId)
-            console.log(response.data)
+
+            signin(accessToken, userId);
+
             alert("You're Signed in")
         } catch (error: any) {
             console.log("Error:", error);
