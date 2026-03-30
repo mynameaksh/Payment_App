@@ -6,6 +6,7 @@ import InputBox from "../components/InputBox"
 import Links from "../components/Links"
 import api from "../api"
 import { useAuth } from "../context/AuthContext"
+import { Navigate, useNavigate } from "react-router-dom"
 
 interface SignupResponse {
   accessToken: string;
@@ -15,7 +16,7 @@ interface SignupResponse {
 
 
 function Signup() {
-
+  const navigate = useNavigate()
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -42,6 +43,7 @@ function Signup() {
 
 
       alert('Account created')
+      navigate("/account/dashboard")
     } catch (error: any) {
 
       const errorMsg = error.response?.data?.message || 'signup failed';

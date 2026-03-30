@@ -1,6 +1,6 @@
 
 interface HeadingProp {
-    label: string
+    label: number | null | string
 }
 
 export function Heading({ label }: HeadingProp) {

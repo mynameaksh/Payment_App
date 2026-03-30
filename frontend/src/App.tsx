@@ -11,10 +11,10 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/user/signup" element={Signup()} />
-          <Route path="/user/signin" element={Signin()} />
-          <Route path="/dashboard" element={Dashboard()} />
-          <Route path="/sendmoney" element={SendMoney()} />
+          <Route path="/user/signup" element={<Signup />} />
+          <Route path="/user/signin" element={<Signin />} />
+          <Route path="/account/dashboard" element={<Dashboard />} />
+          <Route path="/account/transfer" element={<SendMoney />} />
         </Routes>
       </BrowserRouter>
 

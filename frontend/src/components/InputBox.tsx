@@ -2,6 +2,8 @@ import { forwardRef } from "react";
 
 interface InputBoxProp {
     placeholder: string;
+
+
 }
 
 const InputBox = forwardRef<HTMLInputElement, InputBoxProp>(
@@ -9,6 +11,7 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProp>(
         return (
             <div>
                 <input
+
                     ref={ref}
                     type="text"
                     placeholder={placeholder}

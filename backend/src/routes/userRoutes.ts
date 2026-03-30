@@ -11,7 +11,7 @@ router.post("/signin", signin);
 router.post("/refresh", authMiddleware, refreshToken);
 router.post("/logout", logout);
 router.put("/updateInfo", authMiddleware, updateInfo)
-router.get("/user/search", authMiddleware, getUser)
+router.get("/search", authMiddleware, getUser)
 
 
 export default router;

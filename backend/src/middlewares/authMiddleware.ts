@@ -1,4 +1,4 @@
-import { request, type NextFunction, type Request, type Response } from "express";
+import { type NextFunction, type Request, type Response } from "express";
 import jwt from "jsonwebtoken"
 
 export interface JwtPayload {
@@ -33,6 +33,8 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
         next()
     } catch (error) {
         console.log(error);
-
+        return res.status(401).json({
+            message: "Invalid or expired token"
+        })
     }
 }

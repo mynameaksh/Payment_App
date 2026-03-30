@@ -211,7 +211,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
         const search = req.query.q || ""; "THE EMPTY STRING WILL HELP YU TO GET ALL THE USERS "
 
         const foundUser = await User.find({
-            username: { $regex: `^${search}`, $options: "i" } //^ = IT MATCXHES WITH THE INPUT OR EMPTY VALUE 
+            username: { $regex: `^${search}`, $options: "i" } // = IT MATCXHES WITH THE INPUT OR EMPTY VALUE 
         })
         if (!foundUser) {
             return res.json({

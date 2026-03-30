@@ -6,6 +6,7 @@ import InputBox from "../components/InputBox"
 import Links from "../components/Links"
 import api from "../api"
 import { useAuth } from "../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 interface SignupResponse {
     accessToken: string;
@@ -14,6 +15,7 @@ interface SignupResponse {
 }
 
 function Signin() {
+    const navigate = useNavigate()
     const { signin } = useAuth()
     const usernameRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -31,7 +33,9 @@ function Signin() {
 
             signin(accessToken, userId);
 
-            alert("You're Signed in")
+
+            navigate("/account/dashboard")
+
         } catch (error: any) {
             console.log("Error:", error);
 
